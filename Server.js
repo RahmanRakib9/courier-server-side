@@ -33,13 +33,25 @@ async function run() {
           const database = client.db('courierService');
           const serviceCollection = database.collection('Services');
 
-          //post api 
+          //post api (get data from admin panel and post them into mongodb)
           app.post('/services', async (req, res) => {
                const services = req.body;
                const result = await serviceCollection.insertOne(services);
 
                res.json(result);
+          });
+
+
+
+
+          //get api (get all services from mongodb)
+          app.get('/services', async (req, res) => {
+               const cursor = serviceCollection.find({});
+               const result = await cursor.toArray();
+
+               res.json(result);
           })
+
 
 
 
