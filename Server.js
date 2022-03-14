@@ -28,6 +28,19 @@ console.log(uri);
 
 async function run() {
      try {
+          await client.connect();
+
+          const database = client.db('courierService');
+          const serviceCollection = database.collection('Services');
+
+          //post api 
+          app.post('/services', async (req, res) => {
+               const services = req.body;
+               const result = await serviceCollection.insertOne(services);
+
+               res.json(result);
+          })
+
 
 
      }
