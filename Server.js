@@ -4,6 +4,7 @@ const port = 5000;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 
 
 //use environment file
@@ -41,16 +42,42 @@ async function run() {
                res.json(result);
           });
 
-
-
-
           //get api (get all services from mongodb)
           app.get('/services', async (req, res) => {
                const cursor = serviceCollection.find({});
                const result = await cursor.toArray();
 
                res.json(result);
-          })
+          });
+
+          //get api (get specific user based on their _id for implement updating method)
+          app.get('/services/:id', async (req, res) => {
+               const id = req.params.id;
+               const query = { _id: ObjectId(id) };
+               const service = await serviceCollection.findOne(query);
+
+               res.json(service);
+          });
+
+          //update api
+          app.put('/services/:id', async (req, res) => {
+               const id = req.params.id;
+               const serviceInfo = req.body;
+               const filter = { _id: ObjectId(id) };
+               const options = { upsert: true };
+
+               const updateDoc = {
+                    $set: {
+                         name: serviceInfo.name,
+                         description: serviceInfo.description,
+                         image: serviceInfo.image
+                    },
+               };
+
+               const result = await serviceCollection.updateOne(filter, updateDoc, options);
+
+               res.json(result);
+          });
 
 
 
